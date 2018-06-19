@@ -56,18 +56,24 @@ def get_id_url_title(line):
 
 
 path = 'E:\\bishe\\wikiProject\\enwik'
+content = ''
 all_files = get_all_enwiki_files(path)
 for filenames in all_files:
     for file in filenames:
+        print(file)
         for line in open(file):
-            sline = line.strip()
-            if sline.find('<doc id="') == 0:
-                wiki_id, url, title = get_id_url_title(sline)
-                print(wiki_id)
-                print(url)
-                print(title)
-                print('\n')
-
+            sline = line
+            if sline == '\n':
+                continue
+            else:
+                if sline.find('<doc id="') == 0:
+                    content = ''
+                    wiki_id, url, title = get_id_url_title(sline)
+                elif sline.find('</doc>') == 0:
+                    print(content)
+                    content = ''
+                else:
+                    content += sline
 
 # line = '<doc id="56569671" url="https://en.wikipedia.org/wiki?curid=56569671" title="Shift (1982 film)">'
 # sline = line.strip()
