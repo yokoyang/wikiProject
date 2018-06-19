@@ -23,8 +23,9 @@ def remove_emoji(text):
 
 
 class SQLHandler():
-    def __init__(self, session=None):
+    def __init__(self, session=None, counter=0):
         self.session = session
+        self.counter = counter
 
     def get_session(self):
         if not self.session:
@@ -41,7 +42,9 @@ class SQLHandler():
                 session.execute(
                     "insert into wiki.wiki_pedia(wiki_pedia.doc_id,wiki_pedia.url,wiki_pedia.title,wiki_pedia.content) value(:param1,:param2,:param3,:param4)",
                     {"param1": wiki_id, "param2": url, "param3": title, "param4": content})
-                session.commit()
+                self.counter += 1
+                if self.counter % 500 == 0:
+                    session.commit()
             return {'wiki_id': wiki_id}
         except Exception, error:
             print(error)

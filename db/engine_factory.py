@@ -10,7 +10,7 @@ class EngineFactory:
     @staticmethod
     def create_engine_to_wiki():
         engine = create_engine("mysql+pymysql://root:root@10.141.221.73/wiki?charset=utf8", encoding='utf-8',
-                               echo=True)
+                               echo=False)
         return engine
 
     @staticmethod
