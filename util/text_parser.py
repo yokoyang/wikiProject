@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from db import model
 
 import os
+import re
 
 folder_list = []
 
@@ -28,9 +30,56 @@ def get_all_enwiki_files(path):
     all_files = []
     for folder in folder_list:
         all_files.append(get_all_files(folder))
+    return all_files
 
-    print(all_files)
+
+# def parse_file
+def get_id_url_title(line):
+    wiki_id = 0
+    url = ''
+    title = ''
+    pattern1 = re.compile(r'id="(.*?)"')
+    result1 = pattern1.findall(line)
+    if len(result1) > 0:
+        wiki_id = result1[0]
+
+    pattern2 = re.compile(r'url="(.*)" ')
+    result2 = pattern2.findall(sline)
+    if len(result2) > 0:
+        url = result2[0]
+    pattern3 = re.compile(r'title="(.*)">')
+    result3 = pattern3.findall(sline)
+    if len(result3) > 0:
+        title = result3[0]
+
+    return wiki_id, url, title
 
 
 path = 'E:\\bishe\\wikiProject\\enwik'
-get_all_enwiki_files(path)
+all_files = get_all_enwiki_files(path)
+for filenames in all_files:
+    for file in filenames:
+        for line in open(file):
+            sline = line.strip()
+            if sline.find('<doc id="') == 0:
+                wiki_id, url, title = get_id_url_title(sline)
+                print(wiki_id)
+                print(url)
+                print(title)
+                print('\n')
+
+
+# line = '<doc id="56569671" url="https://en.wikipedia.org/wiki?curid=56569671" title="Shift (1982 film)">'
+# sline = line.strip()
+#
+# pattern1 = re.compile(r'id="(.*?)"')
+# result1 = pattern1.findall(sline)
+# print(result1[0])
+#
+# pattern2 = re.compile(r'url="(.*)" ')
+# result2 = pattern2.findall(sline)
+# print(result2[0])
+#
+# pattern2 = re.compile(r'title="(.*)">')
+# result2 = pattern2.findall(sline)
+# print(result2[0])
