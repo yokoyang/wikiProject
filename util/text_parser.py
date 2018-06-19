@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from db import model
 
 import os
 import re
@@ -7,6 +6,7 @@ from db.model import Wikipedia
 from db.model import EngineFactory
 from sqlalchemy import insert
 from db.sql_handler import SQLHandler
+import sys
 
 folder_list = []
 session = EngineFactory.create_session()
@@ -61,7 +61,7 @@ def get_id_url_title(line):
     return wiki_id, url, title
 
 
-path = 'E:\\bishe\\wikiProject\\enwik'
+path = '/home/fdse/data_prepare/wikipedia/wikiextractor/enwiki'
 content = ''
 wiki_id = 0
 url = ''
