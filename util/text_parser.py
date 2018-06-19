@@ -3,8 +3,14 @@ from db import model
 
 import os
 import re
+from db.model import Wikipedia
+from db.model import EngineFactory
+from sqlalchemy import insert
+from db.sql_handler import SQLHandler
 
 folder_list = []
+session = EngineFactory.create_session()
+sql_handler = SQLHandler()
 
 
 def traverse(f):
@@ -57,20 +63,27 @@ def get_id_url_title(line):
 
 path = 'E:\\bishe\\wikiProject\\enwik'
 content = ''
+wiki_id = 0
+url = ''
+title = ''
 all_files = get_all_enwiki_files(path)
 for filenames in all_files:
     for file in filenames:
         print(file)
         for line in open(file):
             sline = line
-            if sline == '\n':
+            if sline == '':
                 continue
             else:
                 if sline.find('<doc id="') == 0:
                     content = ''
                     wiki_id, url, title = get_id_url_title(sline)
                 elif sline.find('</doc>') == 0:
+                    sql_handler.add_wikipedia(wiki_id, url, title, content)
                     print(content)
+                    wiki_id = 0
+                    url = ''
+                    title = ''
                     content = ''
                 else:
                     content += sline
