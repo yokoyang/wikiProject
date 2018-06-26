@@ -17,8 +17,8 @@ class Wikipedia(Base):
     __tablename__ = 'wiki_pedia'
     id = Column(Integer, primary_key=True)  # auto incrementing
     doc_id = Column(Integer, index=True, unique=True, nullable=False)
-    url = Column(String(128))
-    title = Column(Text)
+    url = Column(String(128), index=True, nullable=False)
+    title = Column(String(64), index=True, nullable=False)
     content = Column(LONGTEXT())
 
     def __init__(self, doc_id=None, url=None, title=None, content=None):
