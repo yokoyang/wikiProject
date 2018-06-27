@@ -21,8 +21,11 @@ emoji_pattern = re.compile(
 def remove_emoji(text):
     return emoji_pattern.sub(r'', text)
 
+
 class test():
     def __init__(self):
+        pass
+
 
 class SQLHandler():
     def __init__(self, session=None, counter=0):
@@ -48,5 +51,5 @@ class SQLHandler():
                 if self.counter % 500 == 0:
                     session.commit()
             return {'wiki_id': wiki_id}
-            except Exception, error:
-        print(error)
+        except Exception, error:
+            print(error)
