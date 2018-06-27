@@ -1,4 +1,5 @@
 import traceback
+from math import ceil
 from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, Text, MetaData, ForeignKey, DateTime, Index, Boolean, func, Table, \
@@ -9,6 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from engine_factory import EngineFactory
+from word2vec import TextClassification
 
 Base = declarative_base()
 
@@ -27,6 +29,31 @@ class Wikipedia(Base):
         self.title = title
         self.content = content
 
+    @staticmethod
+    def getNumOf(session):
+        result = session.execute("SELECT count(wiki_pedia.id) FROM wiki_pedia").first()
+        return result[0]
+
+    @staticmethod
+    def searchPageOf(session, page_size, page_index):
+        result = session.query(Wikipedia).limit(page_size).offset((page_index) * page_size)
+        return result
+
+    @staticmethod
+    def searchById(session, _id):
+        result = session.query(Wikipedia).filter_by(id=_id).first()
+        return result
+
+    @staticmethod
+    def searchByDocId(session, _doc_id):
+        result = session.query(Wikipedia).filter_by(doc_id=_doc_id).first()
+        return result
+
+    @staticmethod
+    def searchByTitle(session, _title):
+        result = session.query(Wikipedia).filter_by(title=_title).first()
+        return result
+
     def __unicode__(self):
         return self.__repr__()
 
@@ -36,9 +63,43 @@ class Wikipedia(Base):
 
 if __name__ == "__main__":
     engine = EngineFactory.create_engine_to_wiki()
-    metadata = MetaData(bind=engine)
-    # delete all table
-    # Base.metadata.drop_all(bind=engine)
+    # metadata = MetaData(bind=engine)
+    session = EngineFactory.create_session(engine)
+    # list = Wikipedia.searchPageOf(session,1000)
+    totalnum = Wikipedia.getNumOf(session)
+    print(totalnum)
+    # get dictionary from docs
+    dictionary = TextClassification.getDictionary([["computer", "science"]])
+    for ii in range(0, ceil(totalnum / 1000)):
+        doc_list = Wikipedia.searchPageOf(session, 1000, ii)
+        print(type(doc_list))
+        documents = []
+        for doc in doc_list:
+            documents = documents + TextClassification.divideIntoWords([doc.content])
+        dic = TextClassification.getDictionary(documents)
+        print(dic)
+        dic_transfer = dictionary.merge_with(dic)
+    dictionary.filter_extremes(no_below=5)
+    dictionary.save("../model/dict")
+
+    # translate the files to vecters and inform .data file for TF-IDF model
+    '''
+    vec = []
+    for ii in range(0,ceil(totalnum/1000)):
+        doc_list = Wikipedia.searchPageOf(session,1000,ii)
+        print(type(doc_list))
+        documents = []
+        for doc in doc_list:
+            documents = documents + TextClassification.divideIntoWords([doc.content])
+        dic = TextClassification.getDictionary(documents)
+        print(dic)
+        dic_transfer = dictionary.merge_with(dic)
+    dictionary.filter_extremes(no_below=5) 
+    dictionary.save("../model/dict")
+    '''
 
     # create the table
+    '''
     Base.metadata.create_all(bind=engine)
+    metadata = MetaData(bind=engine)
+    '''
